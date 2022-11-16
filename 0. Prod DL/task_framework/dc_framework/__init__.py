@@ -1,1 +1,1 @@
-from .model_instruments import init
+from .model_instruments import init, load
