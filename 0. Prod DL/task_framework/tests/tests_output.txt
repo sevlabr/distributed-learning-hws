@@ -1,0 +1,19 @@
+Test on CPU
+Loading data...
+Starting training...
+Epoch: 5; Accuracy: 50.0
+Epoch: 10; Accuracy: 50.0
+Training is finished!
+
+Testing model...
+Accuracy = 50.0 %
+
+Test on GPU
+Loading data...
+Starting training...
+Epoch: 5; Accuracy: 25.0
+Epoch: 10; Accuracy: 50.0
+Training is finished!
+
+Testing model...
+Accuracy = 50.0 %

@@ -65,6 +65,7 @@ class DCFramework:
         n_epochs: int = 10
     ):
         logger.warning("Loading data...")
+        # TODO: loading whole data on device is not optimal
         train_data = Dataset(train_data, device=self.device)
         val_data = Dataset(val_data, device=self.device)
         train_dataloader = train_data.get_dataloader(batch_size=batch_size)
