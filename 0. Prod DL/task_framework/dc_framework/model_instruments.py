@@ -11,13 +11,14 @@ from dc_framework.data_preparation import Dataset
 logger = logging.getLogger("__name__")
 
 
-def init(model: torch.nn.Module, criterion: torch.nn.Module):
-    return DCFramework(model, criterion)
+def init(model: torch.nn.Module, criterion: torch.nn.Module, device: torch.device):
+    return DCFramework(model, criterion, device=device)
 
-def load(path: Path):
+def load(path: Path, device: torch.device):
     model = DCFramework(
         torch.nn.Linear(2, 1), # very silly
-        torch.nn.BCELoss()
+        torch.nn.BCELoss(),
+        device=device
     )
     
     model.load(path)
@@ -25,10 +26,19 @@ def load(path: Path):
     return model
 
 class DCFramework:
-    def __init__(self, model: torch.nn.Module, criterion: torch.nn.Module, lr=1e-3):
+    def __init__(
+        self,
+        model: torch.nn.Module,
+        criterion: torch.nn.Module,
+        lr: float = 1e-3,
+        device: torch.device = torch.device('cpu')
+    ):
         self.model = model
         self.optimizer = torch.optim.SGD(model.parameters(), lr=lr)
         self.criterion = criterion
+        self.device = device
+        
+        self.model.to(device)
 
     def forward(self, feature, target):
         try:
@@ -55,7 +65,8 @@ class DCFramework:
         n_epochs: int = 10
     ):
         logger.warning("Loading data...")
-        train_data, val_data = Dataset(train_data), Dataset(val_data)
+        train_data = Dataset(train_data, device=self.device)
+        val_data = Dataset(val_data, device=self.device)
         train_dataloader = train_data.get_dataloader(batch_size=batch_size)
         val_dataloader = val_data.get_dataloader(batch_size=batch_size)
         
@@ -102,7 +113,7 @@ class DCFramework:
     
     def test(self, test_data: Dict[str, np.array], batch_size: int = 1):
         logger.warning("Testing model...")
-        test_data = Dataset(test_data)
+        test_data = Dataset(test_data, device=self.device)
         test_dataloader = test_data.get_dataloader(batch_size=batch_size)
         accuracy = self._test_model(test_dataloader)
         
